@@ -5,6 +5,7 @@ import moment from 'moment'
 import "react-datepicker/dist/react-datepicker.css";
 import axios from '../../config/axios'
 import EmployeeList from './EmployeeList'
+import FontAwesome from 'react-fontawesome'
 const Form = () => {
 
     const defaultValues = {
@@ -149,50 +150,83 @@ const Form = () => {
 
     return (
         <React.Fragment>
-            <center>
+            <div className="row mt-5 justify-content-center ">
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <label htmlFor="name">Name</label>
-                    <input type="text" name="name" id="name" ref={register({
-                        required: '*',
-                    })} />
-                    {errors.name && (<span style={{ color: "red" }}>{errors.name.message}</span>)}<br />
+                    <h1>Add Employee</h1>
+                    <div className="form-group row">
+                        <label htmlFor="name" className="col-sm-2 col-form-label">Name</label>
+                        <div className="col-sm-5">
+                            <input type="text" name="name" id="name" className="form-control" ref={register({
+                                required: '*',
+                            })} />
+                            {errors.name && (<span style={{ color: "red" }}>{errors.name.message}</span>)}
+                        </div>
+                    </div>
+                    <div className="form-group row">
+                        <label htmlFor="designation" className="col-sm-2 col-form-label">Designation</label>
+                        <div className="col-sm-5">
+                            <input type="text" name="designation" id="designation" className="form-control" ref={register({
+                                required: '*'
+                            })} />
+                            {errors.designation && (<span style={{ color: "red" }}>{errors.designation.message}</span>)}
+                        </div>
+                    </div>
 
-                    <label htmlFor="designation">Designation</label>
-                    <input type="text" name="designation" id="designation" ref={register({
-                        required: '*'
-                    })} />
-                    {errors.designation && (<span style={{ color: "red" }}>{errors.designation.message}</span>)}<br />
+                    <div className="form-row mb-3">
 
-                    <label htmlFor="contact">Contact Details</label>
-                    <input type="text" name="conType" ref={register} placeholder="type" disabled={disabled} />
-                    {errors.conType && (<span style={{ color: "red" }}>{errors.conType.message}</span>)}
+                        <label htmlFor="contact" className="col-sm-2 col-form-label">Contact</label>
+                        <div className="col-sm">
+                            <input type="text" name="conType" ref={register} className="form-control" placeholder="type" disabled={disabled} />
+                            {errors.conType && (<span style={{ color: "red" }}>{errors.conType.message}</span>)}
+                        </div>
 
-                    <input type="text" maxLength="10" name="number" id="contact" ref={register}
-                        onKeyUp={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/, '')
-                        }} placeholder="phone number" disabled={disabled} />
-                    {errors.number && (<span style={{ color: "red" }}>{errors.number.message}</span>)}
+                        <div className="col-sm">
+                            <input type="text" maxLength="10" name="number" id="contact" className="form-control" ref={register}
+                                onKeyUp={(e) => {
+                                    e.target.value = e.target.value.replace(/[^0-9]/, '')
+                                }} placeholder="phone number" disabled={disabled} />
+                            {errors.number && (<span style={{ color: "red" }}>{errors.number.message}</span>)}
+                            {/* <button type="button" className="btn btn-primary mb-2" >phone</button> */}
 
-                    <button type="button" onClick={handlePhone} disabled={disabled}>phone</button><br />
+                        </div>
+                        <div className="col-sm">
+                            <FontAwesome className="fas fa-plus-square" size="2x" type="button" onClick={handlePhone} disabled={disabled} />
+                        </div>
 
-                    <label htmlFor="skills">Skills</label>
-                    <input type="text" name="skill" id="skills" ref={register} />
-                    <button type="button" onClick={handleSkill}>Skill</button><br />
+                    </div>
 
-                    <label htmlFor="dob">Date of Birth</label>
-                    <DatePicker
+                    <div className="form-group row">
+                        <label htmlFor="skills" className="col-sm-2 col-form-label">Skills</label>
+                        <div className="col-sm-5">
+                            <input type="text" name="skill" className="form-control" id="skills" ref={register} />
+                        </div>
+                        {/* <button type="button" onClick={handleSkill}>Skill</button> */}
+                        <FontAwesome className="fas fa-plus-square" size="2x" type="button" onClick={handleSkill} />
+                    </div>
+                    <div className="form-group row">
+                        <label htmlFor="dob" className="col-sm-2 col-form-label">Date of Birth</label>
+                        <div className="col-sm-5">
+                            <DatePicker
+                                className="form-control"
+                                ref={register({ name: 'dob' })}
+                                selected={watch('dob')}
+                                onChange={date => {
+                                    setValue('dob', date)
+                                }}
+                            />
+                        </div>
+                    </div>
+                    <div className="col-md-8 text-center">
+                        <button type="submit" className="btn btn-primary mb-4 btn-lg center-block">Add Employee</button>
+                    </div>
+                </form >
 
-                        ref={register({ name: 'dob' })}
-                        selected={watch('dob')}
-                        onChange={date => {
-                            setValue('dob', date)
-                        }}
-                    /><br />
-                    <button type="submit">Add Employee</button>
-                </form>
-                <button onClick={handleGetData}>View Data</button>
+            </div >
+            <div className="col-md-9 ml-5 text-center">
+                <button onClick={handleGetData} className="btn btn-primary btn-lg mb-4">View Data</button>
                 <EmployeeList empdata={empdata} />
-            </center>
+            </div>
+
         </React.Fragment>
     )
 }

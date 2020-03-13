@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import DatePicker from "react-datepicker";
 import { useForm } from 'react-hook-form'
 import moment from 'moment'
@@ -15,7 +15,7 @@ const Form = () => {
         skills: [],
         dob: ''
     }
-
+    const dwn = useRef(null)
     const { register, handleSubmit, errors, getValues, reset, setValue, setError, clearError, watch } = useForm(defaultValues);
 
     const [skill, setSkill] = useState([])
@@ -85,8 +85,12 @@ const Form = () => {
 
     const handleSkill = (e) => {
         const { skill } = getValues()
-        setSkill(prevArray => [...prevArray, skill])
-        setValue('skill', '')
+        if (skill == "") {
+            window.alert('enter the skill value before ADD')
+        } else {
+            setSkill(prevArray => [...prevArray, skill])
+            setValue('skill', '')
+        }
     }
 
     const handlePhone = (e) => {
@@ -147,7 +151,44 @@ const Form = () => {
         }
         getEmpData()
     }
+    const handleDownload = () => {
+        const getDownloadData = async () => {
+            // const download = empdata
+            // let blob = new Blob([JSON.stringify(download)], { type: 'application/octet-stream' })
+            // dwn.current.href = URL.createObjectURL(blob)
+            // dwn.current.download = "input.json"
+            // dwn.current.click()
+            {
+                (async () => {
+                    const res = await axios.get('/employees')
+                    try {
+                        const downloadData = res.data
+                        var data1 = []
+                        downloadData.forEach(function (item) {
+                            var tempItem = Object.assign({}, item);
+                            tempItem.Contact.map(c1 => {
+                                delete c1._id
+                            })
+                            delete tempItem._id;
+                            delete tempItem.__v;
+                            data1.push(tempItem);
+                        });
+                        console.log(data1)
+                        var dwnData = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data1));
+                        console.log(dwn, '   ', dwnData)
+                        dwn.current.href = "data:" + dwnData
+                        dwn.current.download = "dwnData.json"
+                        dwn.current.innerHTML = 'download JSON'
+                        dwn.current.click()
+                    } catch (err) {
+                        window.alert(err)
+                    }
+                })()
+            }
 
+        }
+        getDownloadData()
+    }
     return (
         <React.Fragment>
             <div className="row mt-5 justify-content-center ">
@@ -210,6 +251,10 @@ const Form = () => {
                                 className="form-control"
                                 ref={register({ name: 'dob' })}
                                 selected={watch('dob')}
+                                peekNextMonth
+                                showMonthDropdown
+                                showYearDropdown
+                                dropdownMode="select"
                                 onChange={date => {
                                     setValue('dob', date)
                                 }}
@@ -222,6 +267,10 @@ const Form = () => {
                 </form >
 
             </div >
+            <div className="col-md-9 ml-5 text-center">
+                <a style={{ display: 'none' }} href='empty' ref={dwn}>ref</a>
+                <button className="btn btn-primary btn-lg mb-4" onClick={handleDownload}>Download</button>
+            </div>
             <div className="col-md-9 ml-5 text-center">
                 <button onClick={handleGetData} className="btn btn-primary btn-lg mb-4">View Data</button>
                 <EmployeeList empdata={empdata} />
